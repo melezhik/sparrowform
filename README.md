@@ -26,6 +26,9 @@ Scenarios should be named as `$terrafrom-instance-type.$terraform-instance-ID.sp
     $ nano aws_instance.example3.sparrowfile
     # ...
 
+See also [Sparrowdo one liners option](https://github.com/melezhik/sparrowform#create-sparrowodo-scenarios-one-per-instance)
+on how to run sparrowdo tasks/modules not scenarios.
+
 ## Run Sparrowdo provision
 
 This command will run Sparrowdo scenarios for all instances for which files `$terrafrom-instance-ID.sparrowfile` exist:
