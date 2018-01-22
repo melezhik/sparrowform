@@ -6,6 +6,11 @@
 
     $ zef install Sparrowform
 
+# Limitations
+
+Currently only ***ssh instances with public IPs are supported*** ( usually is what one has when deploy aws ec2 instances with public IPs ).
+Ping me if you need more flavors/ways support.
+
 # Usage
 
 ## Write some Terraform scenarios and deploy some instances
