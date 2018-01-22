@@ -1,3 +1,7 @@
+# 0.0.3
+
+Doc - improved examples
+
 # 0.0.2
 
 Sparrowdo one liners support

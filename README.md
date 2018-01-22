@@ -49,6 +49,9 @@ You may pass ssh connection parameters by specifying [sparrowdo cli](https://git
     # check if Nginx alive on all instances:
     $ sparrowform --task_run=bash@command='"ps uax|grep nginx"'
 
+    # install packages
+    $ sparrowform --task_run=package-generic@list="'nano mc'"
+
 ## Debugging
 
 If something goes awry ... Enable SPF_DEBUG variable to see internal output:
