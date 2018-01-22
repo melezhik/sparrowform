@@ -31,7 +31,7 @@ This command will run Sparrowdo scenarios for all instances for which files `$te
 
 You may pass ssh connection parameters by specifying [sparrowdo cli](https://github.com/melezhik/sparrowdo#sparrowdo-client-command-line-parameters) parameters:
 
-    $ sparrowform --ssh_user=ec2-user --ssh_private_key=/path/to/ssh.key
+    $ sparrowform run --ssh_user=ec2-user --ssh_private_key=/path/to/ssh.key
 
 # Author
 
