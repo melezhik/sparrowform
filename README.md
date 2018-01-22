@@ -21,9 +21,9 @@ Ping me if you need more flavors/ways support.
 
 Scenarios should be named as `$terrafrom-instance-type.$terraform-instance-ID.sparrowfile`
 
-    $ nano example.sparrowfile
-    $ nano example2.sparrowfile
-    $ nano example3.sparrowfile
+    $ nano aws_instance.example.sparrowfile
+    $ nano aws_instance.example2.sparrowfile
+    $ nano aws_instance.example3.sparrowfile
     # ...
 
 ## Run Sparrowdo provision
