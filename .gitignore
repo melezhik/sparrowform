@@ -1,0 +1,7 @@
+.terraform/
+terraform.tfstate
+tf.show.out
+lib/.precomp/
+.precomp
+*.tar.gz
+Sparrowform-*

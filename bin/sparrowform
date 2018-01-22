@@ -1,8 +1,30 @@
 #!/usr/bin/env perl6
 
-
 use v6;
+use Data::Dump;
 
-say @*ARGS.perl;
+my $tf-show = run 'terraform', 'show', :out;
+
+my $resource-id;
+my %resources = Hash.new;
+
+for $tf-show.out.lines -> $line {
+  if $line ~~ /^ (\S+) ':' $/ { # set new resource
+    $resource-id = "$0";
+    %resources{$resource-id} = Hash.new;
+    next;
+  }
+    
+   if $line ~~ /^ \s+ (\S+) \s+ '=' \s+ (.*) $/ { # read resource attrubutes
+    #say $0;
+    %resources{$resource-id}{"$0"} = "$1";
+    next;
+   }
+}
 
 
+$tf-show.out.close();
+
+say Dump(%resources);
+
+#say "provision $instance-id ...";
