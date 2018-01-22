@@ -29,6 +29,10 @@ say Dump(%resources) if %*ENV<SPF_DEBUG>;
 
 for %resources.keys -> $r {
   next unless ("$r"~".sparrowfile").IO ~~ :e;
-  say "provision $r ...";
+  my $public-ip = %resources{$r}<public_ip>;
+  say "provision $r <$public-ip> ...";
+  my $cmd = "sparrowdo --sparrowfile=" ~ "$r.sparrowfile --host=" ~ $public-ip ~ " " ~ ( join " ", @*ARGS );
+  say "run $cmd" if %*ENV<SPF_DEBUG>;
+  shell $cmd;
 }
 
