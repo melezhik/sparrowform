@@ -25,6 +25,10 @@ for $tf-show.out.lines -> $line {
 
 $tf-show.out.close();
 
-say Dump(%resources);
+say Dump(%resources) if %*ENV<SPF_DEBUG>;
 
-#say "provision $instance-id ...";
+for %resources.keys -> $r {
+  next unless ("$r"~".sparrowfile").IO ~~ :e;
+  say "provision $r ...";
+}
+

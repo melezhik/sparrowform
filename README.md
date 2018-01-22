@@ -14,7 +14,7 @@
 
 ## Create Sparrowodo scenarios, one per instance
 
-Scenarios should be named as `$terrafrom-instance-ID.sparrowfile`
+Scenarios should be named as `$terrafrom-instance-type.$terraform-instance-ID.sparrowfile`
 
     $ nano example.sparrowfile
     $ nano example2.sparrowfile
@@ -25,13 +25,20 @@ Scenarios should be named as `$terrafrom-instance-ID.sparrowfile`
 
 This command will run Sparrowdo scenarios for all instances for which files `$terrafrom-instance-ID.sparrowfile` exist:
 
-    $ sparrowform run
+    $ sparrowform
 
 ## Handling ssh connections
 
 You may pass ssh connection parameters by specifying [sparrowdo cli](https://github.com/melezhik/sparrowdo#sparrowdo-client-command-line-parameters) parameters:
 
-    $ sparrowform run --ssh_user=ec2-user --ssh_private_key=/path/to/ssh.key
+    $ sparrowform --ssh_user=ec2-user --ssh_private_key=/path/to/ssh.key
+
+## Debugging
+
+If something goes awry ... Enable SPF_DEBUG variable to see internal output:
+
+    $ SPF_DEBUG=1 sparrowform
+
 
 # Author
 
