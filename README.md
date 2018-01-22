@@ -23,7 +23,7 @@ Scenarios should be named as `$terrafrom-instance-ID.sparrowfile`
 
 ## Run Sparrowdo provision
 
-This command will run sparrowdo scenarios for instances
+This command will run Sparrowdo scenarios for all instances for which files `$terrafrom-instance-ID.sparrowfile` exist:
 
     $ sparrowform run
 
