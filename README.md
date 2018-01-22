@@ -44,6 +44,11 @@ If something goes awry ... Enable SPF_DEBUG variable to see internal output:
 
     $ SPF_DEBUG=1 sparrowform
 
+## Dry run
+
+If you only want to see which instances would be deployed, run with  SPG_DRYRUN enabled:
+
+    $ SPF_DRYRUN=1 sparrowform
 
 # Author
 
