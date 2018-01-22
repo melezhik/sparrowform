@@ -1,6 +1,6 @@
 # Synopsis
 
-[Sparrowdo](https://github.com/melezhik/sparrowdo) provision for [terraform](https://www.terraform.io) backed instances.
+[Sparrowdo](https://github.com/melezhik/sparrowdo) provision for [Terraform](https://www.terraform.io) backed instances.
 
 # Install
 
