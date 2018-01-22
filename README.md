@@ -38,6 +38,14 @@ You may pass ssh connection parameters by specifying [sparrowdo cli](https://git
 
     $ sparrowform --ssh_user=ec2-user --ssh_private_key=/path/to/ssh.key
 
+## Using [sparrowdo one liners](https://github.com/melezhik/sparrowdo#--module_run) instead of scenarios:
+
+    # install Nginx on all instances:
+    $ sparrowform --module_run=Nginx
+
+    # check if Nginx alive on all instances:
+    $ sparrowform --task_run=bash@command='"ps uax|grep nginx"'
+
 ## Debugging
 
 If something goes awry ... Enable SPF_DEBUG variable to see internal output:
