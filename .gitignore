@@ -8,3 +8,5 @@ Sparrowform-*
 *.sparrowfile
 *.backup
 sparrowfile
+.reports
+
