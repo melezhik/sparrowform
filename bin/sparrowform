@@ -60,8 +60,9 @@ mkdir ".reports";
 my @promises;
 my $i=0;
 for %commands.keys -> $host {
+  mkdir ".sparrowdo-cache/$host";
   my $c = %commands{$host};
-  my $cmd = "$c 1>.reports/r$host.txt 2>.reports/r$host.txt &";
+  my $cmd = "$c --sparrow_root=$*CWD/sparrowdo-cache/$host 1>.reports/r$host.txt 2>&1 &";
   say "run sparrowdo provsion for host $host ... ; report is being written to .reports/r$host.txt ...";
   shell $cmd;
 }
