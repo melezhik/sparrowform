@@ -7,6 +7,6 @@ lib/.precomp/
 Sparrowform-*
 *.sparrowfile
 *.backup
-sparrowfile
-.reports
+#sparrowfile
+.sparrowform
 

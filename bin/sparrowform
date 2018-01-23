@@ -55,15 +55,17 @@ for %resources.keys -> $r {
 
 exit if %*ENV<SPF_DRYRUN>;
 
-mkdir ".reports";
-
+mkdir ".sparrowform";
+mkdir ".sparrowform/sparrowdo-cache";
+mkdir ".sparrowform/reports";
+mkdir ".sparrowform/failures";
 my @promises;
 my $i=0;
 for %commands.keys -> $host {
-  mkdir ".sparrowdo-cache/$host";
+  unlink ".sparrowform/failures/$host";
   my $c = %commands{$host};
-  my $cmd = "$c --sparrow_root=$*CWD/sparrowdo-cache/$host 1>.reports/r$host.txt 2>&1 &";
-  say "run sparrowdo provsion for host $host ... ; report is being written to .reports/r$host.txt ...";
+  my $cmd = "$c --sparrow_root=$*CWD/.sparrowform/sparrowdo-cache/$host 1>.sparrowform/reports/r$host.txt 2>&1 || touch .sparrowform/failures/$host &";
+  say "run sparrowdo provision for host $host ... ; report is being written to .sparrowform/reports/r$host.txt ...";
   shell $cmd;
 }
 
@@ -79,7 +81,8 @@ while %exists.keys {
     my $proc-run = run @proc-check-cmd, :out; 
     if $proc-run.exitcode != 0 {
       %exists{$host}:delete;
-      say "host $host finished ..."
+      my $st = "$*CWD/.sparrowform/failures/$host".IO.e ?? 'failed' !! 'succeed';
+      say "host $host finished ... status: [$st]"
     }
   }
 
