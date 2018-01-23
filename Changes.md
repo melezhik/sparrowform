@@ -1,3 +1,7 @@
+# 0.0.4
+
+Default Sparrowdo scenario
+
 # 0.0.3
 
 Doc - improved examples

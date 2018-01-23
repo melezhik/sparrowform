@@ -6,4 +6,5 @@ lib/.precomp/
 *.tar.gz
 Sparrowform-*
 *.sparrowfile
-
+*.backup
+sparrowfile

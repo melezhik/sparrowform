@@ -43,6 +43,12 @@ for %resources.keys -> $r {
     say "run $cmd" if %*ENV<SPF_DEBUG>;
     next if %*ENV<SPF_DRYRUN>;
     shell $cmd;
+  } elsif "sparrowfile".IO.e  {
+    say "provision $r <$public-ip> ...";
+    my $cmd = "sparrowdo --sparrowfile=sparrowfile --host=$public-ip $sparrow-params";
+    say "run $cmd" if %*ENV<SPF_DEBUG>;
+    next if %*ENV<SPF_DRYRUN>;
+    shell $cmd;
   } else {
     say "skip provision $r <$public-ip>, file $r.sparrowfile does not exist";
   }
