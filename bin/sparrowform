@@ -77,7 +77,7 @@ my $i=0;
 for %commands.keys -> $r {
   unlink ".sparrowform/failures/$r";
   my $c = %commands{$r};
-  my $cmd = "$c --sparrow_root=$*CWD/.sparrowform/sparrowdo-cache/$r 1>.sparrowform/reports/$r.txt 2>&1 || touch .sparrowform/failures/$r &";
+  my $cmd = "$c --sparrow_root=/opt/sparrow/sparrowform/$r 1>.sparrowform/reports/$r.txt 2>&1 || touch .sparrowform/failures/$r &";
   if %*ENV<SPF_DEBUG> {
     say "[$r] >>> run provision: $cmd" 
   } else {

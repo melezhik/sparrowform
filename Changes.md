@@ -1,3 +1,7 @@
+# 0.0.9
+
+Better path for sparrow root
+
 # 0.0.8
 
 Occasional sleep in the end of the main program is removed
