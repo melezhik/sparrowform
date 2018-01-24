@@ -1,3 +1,7 @@
+# 0.0.8
+
+Occasional sleep in the end of the main program is removed
+
 # 0.0.7
 
 Colorful dynamic reports using Terminal::Print and Terminal::ANSIColor

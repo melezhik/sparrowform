@@ -129,8 +129,6 @@ while %exists.keys {
 }
 
 
-sleep 10;
-
 $screen.shutdown-screen;
 my $total = @stat.elems;
 
