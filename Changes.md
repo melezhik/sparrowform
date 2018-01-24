@@ -1,3 +1,7 @@
+# 0.0.10
+
+Add seconds elapsed to reports
+
 # 0.0.9
 
 Better path for sparrow root

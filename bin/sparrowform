@@ -41,7 +41,7 @@ for %resources.keys -> $r {
     if %*ENV<SPF_DRYRUN> and %*ENV<SPF_DEBUG> {
       say "[$r] >>> would be provisioned. provision command: $cmd";
     } elsif %*ENV<SPF_DRYRUN> {
-      say "[$r] >>> would be provisioned";
+      say "[$r] >>> would be provisioned. scenario: runtime ( module or task )";
     }
   } elsif "$r.sparrowfile".IO.e  {
     my $cmd = "sparrowdo --sparrowfile=$r.sparrowfile --host=$public-ip " ~  (join " ", @*ARGS);
@@ -49,7 +49,7 @@ for %resources.keys -> $r {
     if %*ENV<SPF_DRYRUN> and %*ENV<SPF_DEBUG> {
       say "[$r] >>> would be provisioned. provision command: $cmd";
     } elsif %*ENV<SPF_DRYRUN> {
-      say "[$r] >>> would be provisioned";
+      say "[$r] >>> would be provisioned. scenario: custom ($r.sparrowfile)";
     }
   } elsif "sparrowfile".IO.e  {
     my $cmd = "sparrowdo --sparrowfile=sparrowfile --host=$public-ip " ~  (join " ", @*ARGS);
@@ -57,7 +57,7 @@ for %resources.keys -> $r {
     if %*ENV<SPF_DRYRUN> and %*ENV<SPF_DEBUG> {
       say "[$r] >>> would be provisioned. provision command: $cmd";
     } elsif %*ENV<SPF_DRYRUN> {
-      say "[$r] >>> would be provisioned";
+      say "[$r] >>> would be provisioned. scenario: default (sparrowfile)";
     }
   } else {
     say "[$r] would be skipped. reason: file $r.sparrowfile does not exist" if %*ENV<SPF_DRYRUN>;
@@ -97,7 +97,7 @@ $screen.initialize-screen;
 $i=0;
 for %commands.keys -> $r {
   $i++;
-  $screen.print-cell(1,$i, colored("[$r]",'bold blue on_black') ~ colored(" >>> ", 'bold black' ) ~ colored('processed','bold yellow on_black'));
+  $screen.print-cell(1,$i, colored("[$r]",'bold blue on_black') ~ colored(" >>> ", 'bold black' ) ~ colored('running','bold yellow on_black'));
 }
 
 my @stat;
@@ -107,7 +107,11 @@ while %exists.keys {
   $i=0;
   for %commands.keys -> $r {
     $i++;
+
     next unless %exists{$r}:exists;
+
+    my $sec-elapsed = (now - $*INITTIME//$*INIT-INSTANT).Int;
+
     my $public-ip = %resources{$r}<public_ip>;
     my @proc-check-cmd = ("bash", "-c", "ps aux | grep sparrowdo | grep '\\--host=$public-ip ' | grep -v grep");
     my $proc-run = run @proc-check-cmd, :out; 
@@ -118,11 +122,13 @@ while %exists.keys {
       $succ++ if $st eq "succeeded";
 
       if $st eq 'succeeded' {
-        $screen.print-cell(1,$i, colored("[$r]",'bold blue on_black') ~ colored(" >>> ", 'bold black' ) ~ colored($st,'bold green on_black'));
+        $screen.print-cell(1,$i, colored("[$r]",'bold blue on_black') ~ colored(" >>> ", 'bold black' ) ~ colored($st,'bold green on_black') ~ ' ' ~ colored("[$sec-elapsed s]",'bold black'));
       } else {
-        $screen.print-cell(1,$i, colored("[$r]",'bold blue on_black') ~ colored(" >>> ", 'bold black' ) ~ colored("$st    ",'bold red on_black'));
+        $screen.print-cell(1,$i, colored("[$r]",'bold blue on_black') ~ colored(" >>> ", 'bold black' ) ~ colored("$st ",'bold red on_black') ~ ' ' ~ colored("[$sec-elapsed s]",'bold black'));
       }
-      push @stat, [ $r, $st ];
+      push @stat, [ $r, $st, $sec-elapsed ];
+    } else {
+        $screen.print-cell(1,$i, colored("[$r]",'bold blue on_black') ~ colored(" >>> ", 'bold black' ) ~ colored('running','bold yellow on_black') ~ ' ' ~ colored("[$sec-elapsed s]",'bold black'));
     }
   }
 
@@ -137,10 +143,11 @@ say "===== $succ out of $total succeeded ===== ";
 for @stat -> $s {
   my $r = $s[0];
   my $st = $s[1];
+  my $se = $s[2];
   if $st eq 'succeeded' {
-      say colored("[$r]",'bold blue on_black'), colored(" >>> ", 'bold black' ), colored($st,'bold green on_black');
+      say colored("[$r]",'bold blue on_black'), colored(" >>> ", 'bold black' ), colored($st,'bold green on_black') ~ ' ' ~ colored("[$se s]",'bold black');
   } else {
-      say colored("[$r]",'bold blue on_black'), colored(" >>> ", 'bold black' ), colored($st,'bold red on_black');
+      say colored("[$r]",'bold blue on_black'), colored(" >>> ", 'bold black' ), colored($st,'bold red on_black') ~ ' ' ~ colored("[$se s]",'bold black');
   }
 }
 
