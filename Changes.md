@@ -1,3 +1,7 @@
+# 0.0.11
+
+Prettifying reports using Perl6 sprintf ( this one is cool BTW :)
+
 # 0.0.10
 
 Add seconds elapsed to reports
