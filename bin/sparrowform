@@ -2,6 +2,8 @@
 
 use v6;
 use Data::Dump;
+use Terminal::ANSIColor;
+use Terminal::Print;
 
 my $tf-show = run 'terraform', 'show', '-no-color', :out;
 
@@ -88,23 +90,59 @@ my %exists = %commands;
 
 sleep 3;
 
-while %exists.keys {
+my $screen = Terminal::Print.new;
 
+$screen.initialize-screen; 
+
+$i=0;
+for %commands.keys -> $r {
+  $i++;
+  $screen.print-cell(1,$i, colored("[$r]",'bold blue on_black') ~ colored(" >>> ", 'bold black' ) ~ colored('processed','bold yellow on_black'));
+}
+
+my @stat;
+my $succ = 0;
+my $fail = 0;
+while %exists.keys {
+  $i=0;
   for %commands.keys -> $r {
+    $i++;
     next unless %exists{$r}:exists;
     my $public-ip = %resources{$r}<public_ip>;
     my @proc-check-cmd = ("bash", "-c", "ps aux | grep sparrowdo | grep '\\--host=$public-ip ' | grep -v grep");
     my $proc-run = run @proc-check-cmd, :out; 
     if $proc-run.exitcode != 0 {
       %exists{$r}:delete;
-      my $st = "$*CWD/.sparrowform/failures/$r".IO.e ?? 'failed' !! 'succeed';
-      say "[$r] >>> finished. status: $st"
+      my $st = "$*CWD/.sparrowform/failures/$r".IO.e ?? 'failed' !! 'succeeded';
+      $fail++ if $st eq "failed";
+      $succ++ if $st eq "succeeded";
+
+      if $st eq 'succeeded' {
+        $screen.print-cell(1,$i, colored("[$r]",'bold blue on_black') ~ colored(" >>> ", 'bold black' ) ~ colored($st,'bold green on_black'));
+      } else {
+        $screen.print-cell(1,$i, colored("[$r]",'bold blue on_black') ~ colored(" >>> ", 'bold black' ) ~ colored("$st    ",'bold red on_black'));
+      }
+      push @stat, [ $r, $st ];
     }
   }
 
 }
 
 
+sleep 10;
 
+$screen.shutdown-screen;
+my $total = @stat.elems;
 
+say "===== $succ out of $total succeeded ===== ";
+
+for @stat -> $s {
+  my $r = $s[0];
+  my $st = $s[1];
+  if $st eq 'succeeded' {
+      say colored("[$r]",'bold blue on_black'), colored(" >>> ", 'bold black' ), colored($st,'bold green on_black');
+  } else {
+      say colored("[$r]",'bold blue on_black'), colored(" >>> ", 'bold black' ), colored($st,'bold red on_black');
+  }
+}
 

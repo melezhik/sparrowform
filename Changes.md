@@ -1,3 +1,7 @@
+# 0.0.7
+
+Colorful dynamic reports using Terminal::Print and Terminal::ANSIColor
+
 # 0.0.6
 
 Bugfix for multihosts provisioning 
