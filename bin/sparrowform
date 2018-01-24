@@ -34,22 +34,31 @@ for %resources.keys -> $r {
   next unless %resources{$r}<public_ip>;
   my $public-ip = %resources{$r}<public_ip>;
   if $sparrow-params ~~ /task_run/ or $sparrow-params ~~ /module_run/ {
-    say "provision $r <$public-ip> ...";
     my $cmd = "sparrowdo --host=$public-ip " ~ (join " ", @*ARGS);
-    say "run $cmd" if %*ENV<SPF_DEBUG>;
-    %commands{$public-ip} = $cmd;
+    %commands{$r} = $cmd;
+    if %*ENV<SPF_DRYRUN> and %*ENV<SPF_DEBUG> {
+      say "[$r] >>> would be provisioned. provision command: $cmd";
+    } elsif %*ENV<SPF_DRYRUN> {
+      say "[$r] >>> would be provisioned";
+    }
   } elsif "$r.sparrowfile".IO.e  {
-    say "provision $r <$public-ip> ...";
     my $cmd = "sparrowdo --sparrowfile=$r.sparrowfile --host=$public-ip " ~  (join " ", @*ARGS);
-    say "run $cmd" if %*ENV<SPF_DEBUG>;
-    %commands{$public-ip} = $cmd;
+    %commands{$r} = $cmd;
+    if %*ENV<SPF_DRYRUN> and %*ENV<SPF_DEBUG> {
+      say "[$r] >>> would be provisioned. provision command: $cmd";
+    } elsif %*ENV<SPF_DRYRUN> {
+      say "[$r] >>> would be provisioned";
+    }
   } elsif "sparrowfile".IO.e  {
-    say "provision $r <$public-ip> ...";
     my $cmd = "sparrowdo --sparrowfile=sparrowfile --host=$public-ip " ~  (join " ", @*ARGS);
-    say "run $cmd" if %*ENV<SPF_DEBUG>;
-    %commands{$public-ip} = $cmd;
+    %commands{$r} = $cmd;
+    if %*ENV<SPF_DRYRUN> and %*ENV<SPF_DEBUG> {
+      say "[$r] >>> would be provisioned. provision command: $cmd";
+    } elsif %*ENV<SPF_DRYRUN> {
+      say "[$r] >>> would be provisioned";
+    }
   } else {
-    say "skip provision $r <$public-ip>, file $r.sparrowfile does not exist";
+    say "[$r] would be skipped. reason: file $r.sparrowfile does not exist" if %*ENV<SPF_DRYRUN>;
   }
 }
 
@@ -57,15 +66,21 @@ exit if %*ENV<SPF_DRYRUN>;
 
 mkdir ".sparrowform";
 mkdir ".sparrowform/sparrowdo-cache";
+rmdir ".sparrowform/reports";
 mkdir ".sparrowform/reports";
 mkdir ".sparrowform/failures";
+
 my @promises;
 my $i=0;
-for %commands.keys -> $host {
-  unlink ".sparrowform/failures/$host";
-  my $c = %commands{$host};
-  my $cmd = "$c --sparrow_root=$*CWD/.sparrowform/sparrowdo-cache/$host 1>.sparrowform/reports/r$host.txt 2>&1 || touch .sparrowform/failures/$host &";
-  say "run sparrowdo provision for host $host ... ; report is being written to .sparrowform/reports/r$host.txt ...";
+for %commands.keys -> $r {
+  unlink ".sparrowform/failures/$r";
+  my $c = %commands{$r};
+  my $cmd = "$c --sparrow_root=$*CWD/.sparrowform/sparrowdo-cache/$r 1>.sparrowform/reports/$r.txt 2>&1 || touch .sparrowform/failures/$r &";
+  if %*ENV<SPF_DEBUG> {
+    say "[$r] >>> run provision: $cmd" 
+  } else {
+    say "[$r] >>> run provision. report file: .sparrowform/reports/$r.txt" 
+  }
   shell $cmd;
 }
 
@@ -75,14 +90,15 @@ sleep 3;
 
 while %exists.keys {
 
-  for %commands.keys -> $host {
-    next unless %exists{$host}:exists;
-    my @proc-check-cmd = ("bash", "-c", "ps aux | grep sparrowdo | grep '\\--host=$host ' | grep -v grep");
+  for %commands.keys -> $r {
+    next unless %exists{$r}:exists;
+    my $public-ip = %resources{$r}<public_ip>;
+    my @proc-check-cmd = ("bash", "-c", "ps aux | grep sparrowdo | grep '\\--host=$public-ip ' | grep -v grep");
     my $proc-run = run @proc-check-cmd, :out; 
     if $proc-run.exitcode != 0 {
-      %exists{$host}:delete;
-      my $st = "$*CWD/.sparrowform/failures/$host".IO.e ?? 'failed' !! 'succeed';
-      say "host $host finished ... status: [$st]"
+      %exists{$r}:delete;
+      my $st = "$*CWD/.sparrowform/failures/$r".IO.e ?? 'failed' !! 'succeed';
+      say "[$r] >>> finished. status: $st"
     }
   }
 
