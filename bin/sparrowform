@@ -1,6 +1,7 @@
 #!/usr/bin/env perl6
 
 use v6;
+use Sparrowform;
 use Data::Dump;
 use Terminal::ANSIColor;
 use Terminal::Print;
@@ -31,11 +32,13 @@ say Dump(%resources) if %*ENV<SPF_DEBUG>;
 my $sparrow-params = join " ", @*ARGS;
 
 my %commands = Hash.new;
+my @hosts;
 
 for %resources.keys -> $r {
   next unless %resources{$r}<public_ip>;
   my $public-ip = %resources{$r}<public_ip>;
   if $sparrow-params ~~ /task_run/ or $sparrow-params ~~ /module_run/ {
+    push @hosts, $public-ip;
     my $cmd = "sparrowdo --host=$public-ip " ~ (join " ", @*ARGS);
     %commands{$r} = $cmd;
     if %*ENV<SPF_DRYRUN> and %*ENV<SPF_DEBUG> {
@@ -44,6 +47,7 @@ for %resources.keys -> $r {
       say "[$r] >>> would be provisioned. scenario: runtime ( module or task )";
     }
   } elsif "$r.sparrowfile".IO.e  {
+    push @hosts, $public-ip;
     my $cmd = "sparrowdo --sparrowfile=$r.sparrowfile --host=$public-ip " ~  (join " ", @*ARGS);
     %commands{$r} = $cmd;
     if %*ENV<SPF_DRYRUN> and %*ENV<SPF_DEBUG> {
@@ -52,6 +56,7 @@ for %resources.keys -> $r {
       say "[$r] >>> would be provisioned. scenario: custom ($r.sparrowfile)";
     }
   } elsif "sparrowfile".IO.e  {
+    push @hosts, $public-ip;
     my $cmd = "sparrowdo --sparrowfile=sparrowfile --host=$public-ip " ~  (join " ", @*ARGS);
     %commands{$r} = $cmd;
     if %*ENV<SPF_DRYRUN> and %*ENV<SPF_DEBUG> {
@@ -62,6 +67,13 @@ for %resources.keys -> $r {
   } else {
     say "[$r] would be skipped. reason: file $r.sparrowfile does not exist" if %*ENV<SPF_DRYRUN>;
   }
+}
+
+set-sparrowform-hosts(@hosts);
+
+
+if %*ENV<SPF_DEBUG> {
+  say "hosts collected:", Dump(sparrowform-hosts) 
 }
 
 exit if %*ENV<SPF_DRYRUN>;
