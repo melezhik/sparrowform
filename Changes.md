@@ -1,3 +1,7 @@
+# 0.0.15
+
+Cleanup (reaping of stale processes in case of sparrowform main process get interrupted )
+
 # 0.0.14
 
 Google_compute_instance support added

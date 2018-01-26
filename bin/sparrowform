@@ -6,6 +6,19 @@ use Data::Dump;
 use Terminal::ANSIColor;
 use Terminal::Print;
 
+END {
+  # kill stale childs, if any
+  for ".sparrowform/childs".IO.lines -> $pid {
+    next unless $pid ~~ /^ \d+ $/;
+    my @proc-check-cmd = ("bash", "-c", "ps --pid $pid 2>/dev/null");
+    my $proc-run = run @proc-check-cmd, :out; 
+    if $proc-run.exitcode == 0 {
+      say "kill process pid $pid ...";
+      qqx "kill $pid"; 
+    }
+  }
+};
+
 my $tf-show = run 'terraform', 'show', '-no-color', :out;
 
 my $resource-id;
@@ -79,10 +92,15 @@ mkdir ".sparrowform/failures";
 
 my @promises;
 my $i=0;
+
+unlink ".sparrowform/childs";
+
 for %commands.keys -> $r {
   unlink ".sparrowform/failures/$r";
   my $c = %commands{$r};
-  my $cmd = "$c --sparrow_root=/opt/sparrow/sparrowform/$r 1>.sparrowform/reports/$r.txt 2>&1 || touch .sparrowform/failures/$r &";
+  my $cmd = "$c --sparrow_root=/opt/sparrow/sparrowform/$r 1>.sparrowform/reports/$r.txt 2>&1 || touch .sparrowform/failures/$r & " 
+  ~ 'echo $! >> .sparrowform/childs';
+
   if %*ENV<SPF_DEBUG> {
     say "[$r] >>> run provision: $cmd" 
   } else {
@@ -91,9 +109,10 @@ for %commands.keys -> $r {
   shell $cmd;
 }
 
+
 my %exists = %commands;
 
-my $screen = Terminal::Print.new;
+my  $screen = Terminal::Print.new;
 
 $screen.initialize-screen; 
 
@@ -154,4 +173,5 @@ for @stat -> $s {
       say colored(sprintf("[%40s]", $r),'bold blue on_black'), colored(" >>> ", 'bold black' ), colored(sprintf("%-10s", $st),'bold red on_black') ~ ' ' ~ colored( sprintf("%.6d", $se) ~ " s", 'bold black');
   }
 }
+
 
