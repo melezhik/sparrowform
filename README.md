@@ -10,8 +10,15 @@
 
 # Limitations
 
-Currently only ***ssh instances with public IPs are supported*** ( usually is what one has when deploy aws ec2 instances with public IPs ).
-Ping me if you need more flavors/ways support.
+Currently only ***ssh accessed instances with public IPs are supported*** ( aws ec2 / google compute instances with public IPs ).
+
+Terrafrom resources supported:
+
+* [aws_instances](https://www.terraform.io/docs/providers/aws/r/instance.html)
+* [google_compute_instance](https://www.terraform.io/docs/providers/google/r/compute_instance.html)
+
+
+Ping me if you need more Terraform resourses support.
 
 # Usage
 

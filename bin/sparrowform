@@ -37,8 +37,8 @@ my $sparrow-params = join " ", @*ARGS;
 my %commands = Hash.new;
 
 for %resources.keys -> $r {
-  next unless %resources{$r}<public_ip>;
-  my $public-ip = %resources{$r}<public_ip>;
+  my $public-ip = %resources{$r}<public_ip> // %resources{$r}<network_interface.0.access_config.0.assigned_nat_ip>;
+  next unless $public-ip;
   if $sparrow-params ~~ /task_run/ or $sparrow-params ~~ /module_run/ {
     my $cmd = "sparrowdo --host=$public-ip " ~ (join " ", @*ARGS);
     %commands{$r} = $cmd;
@@ -115,7 +115,8 @@ while %exists.keys {
 
     my $sec-elapsed = (now - $*INITTIME//$*INIT-INSTANT).Int;
 
-    my $public-ip = %resources{$r}<public_ip>;
+    my $public-ip = %resources{$r}<public_ip> // %resources{$r}<network_interface.0.access_config.0.assigned_nat_ip>;
+
     my @proc-check-cmd = ("bash", "-c", "ps aux | grep sparrowdo | grep '\\--host=$public-ip ' | grep -v grep");
     my $proc-run = run @proc-check-cmd, :out; 
     if $proc-run.exitcode != 0 {

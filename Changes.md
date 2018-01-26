@@ -1,3 +1,7 @@
+# 0.0.14
+
+Google_compute_instance support added
+
 # 0.0.13
 
 Terrafom resources access / inventory support 
