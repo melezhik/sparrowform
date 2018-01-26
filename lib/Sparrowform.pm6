@@ -1,15 +1,23 @@
 use v6;
 
 unit module Sparrowform;
+use JSON::Tiny;
+my @tf-resources;
 
 my @hosts = Array.new;
 
-sub sparrowform-hosts() is export {
-  @hosts
+sub tf-resources() is export {
+  if (! @tf-resources) {
+    my %r = from-json (slurp ".sparrowform/resources.json");
+    for %r.keys -> $r {
+      push @tf-resources, [ $r, %r{$r} ];
+    }
+  }
+  return @tf-resources;
 }
 
-sub set-sparrowform-hosts( @list = ()) is export {
-  @hosts = @list
+sub save-tf-resources( %data = %()) is export {
+  spurt ".sparrowform/resources.json", to-json(%data);
 }
 
 

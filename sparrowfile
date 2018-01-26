@@ -1,1 +1,21 @@
 bash "echo OK";
+
+use Sparrowform;
+
+my @hosts = (
+  "127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4",
+  "::1         localhost localhost.localdomain localhost6 localhost6.localdomain6"
+);
+
+for tf-resources() -> $r {
+  my $rd = $r[1]; # resource data
+  next unless $rd<public_ip>;
+  next unless $rd<public_dns>;
+  next if $rd<public_ip> eq input_params('Host');
+  push @hosts, $rd<public_ip> ~ ' ' ~ $rd<public_dns>;
+}
+
+file '/etc/hosts', %(
+  action  => 'create',
+  content => @hosts.join("\n")
+);

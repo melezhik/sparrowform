@@ -1,3 +1,7 @@
+# 0.0.13
+
+Terrafom resources access / inventory support 
+
 # 0.0.12
 
 Prettifying reports using Perl6 sprintf, part2

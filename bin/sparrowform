@@ -29,16 +29,17 @@ for $tf-show.out.lines -> $line {
 $tf-show.out.close();
 
 say Dump(%resources) if %*ENV<SPF_DEBUG>;
+
+save-tf-resources(%resources);
+
 my $sparrow-params = join " ", @*ARGS;
 
 my %commands = Hash.new;
-my @hosts;
 
 for %resources.keys -> $r {
   next unless %resources{$r}<public_ip>;
   my $public-ip = %resources{$r}<public_ip>;
   if $sparrow-params ~~ /task_run/ or $sparrow-params ~~ /module_run/ {
-    push @hosts, $public-ip;
     my $cmd = "sparrowdo --host=$public-ip " ~ (join " ", @*ARGS);
     %commands{$r} = $cmd;
     if %*ENV<SPF_DRYRUN> and %*ENV<SPF_DEBUG> {
@@ -47,7 +48,6 @@ for %resources.keys -> $r {
       say "[$r] >>> would be provisioned. scenario: runtime ( module or task )";
     }
   } elsif "$r.sparrowfile".IO.e  {
-    push @hosts, $public-ip;
     my $cmd = "sparrowdo --sparrowfile=$r.sparrowfile --host=$public-ip " ~  (join " ", @*ARGS);
     %commands{$r} = $cmd;
     if %*ENV<SPF_DRYRUN> and %*ENV<SPF_DEBUG> {
@@ -56,7 +56,6 @@ for %resources.keys -> $r {
       say "[$r] >>> would be provisioned. scenario: custom ($r.sparrowfile)";
     }
   } elsif "sparrowfile".IO.e  {
-    push @hosts, $public-ip;
     my $cmd = "sparrowdo --sparrowfile=sparrowfile --host=$public-ip " ~  (join " ", @*ARGS);
     %commands{$r} = $cmd;
     if %*ENV<SPF_DRYRUN> and %*ENV<SPF_DEBUG> {
@@ -69,12 +68,6 @@ for %resources.keys -> $r {
   }
 }
 
-set-sparrowform-hosts(@hosts);
-
-
-if %*ENV<SPF_DEBUG> {
-  say "hosts collected:", Dump(sparrowform-hosts) 
-}
 
 exit if %*ENV<SPF_DRYRUN>;
 
@@ -99,8 +92,6 @@ for %commands.keys -> $r {
 }
 
 my %exists = %commands;
-
-#sleep 3;
 
 my $screen = Terminal::Print.new;
 
